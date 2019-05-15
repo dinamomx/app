@@ -1,0 +1,107 @@
+{
+  "name": "$t:repeater",
+  "version": "1.0.0",
+  "types": ["json"],
+  "icon": "code",
+  "recommended": {
+    "length": 65534
+  },
+  "options": {
+    "schema": {
+      "name": "$t:schema",
+      "comment": "$t:schema_comment",
+      "interface": "json",
+      "options": {
+        "language": "application/json",
+        "template": [
+        ]
+      },
+      "default": [
+        {
+          "type": "object",
+          "$key": "columns",
+          "title": "Columnas",
+          "properties": {
+            "titulo": {
+              "title": "Titulo de columna",
+              "type": "field",
+              "$key": "title",
+              "interface": "text-input",
+              "interfaceOptions": {}
+            },
+            "imagen": {
+              "title": "Imagen de tarjeta",
+              "$key": "image",
+              "type": "field",
+              "interface": "file",
+              "interfaceOptions": {}
+            },
+            "subtitulo": {
+              "title": "Subtitulo de columna",
+              "$key": "subtitle",
+              "type": "field",
+              "interface": "text-input",
+              "interfaceOptions": {}
+            },
+            "tarjetas": {
+              "type": "array",
+              "$key": "cards",
+              "title": "Tarjetas",
+              "children": [{
+                "type": "object",
+                "$key": "card",
+                "title": "Tarjeta",
+                "properties": {
+                  "titulo": {
+                    "type": "field",
+                    "$key": "title",
+                    "title": "Titulo de tarjeta",
+                    "default": ""
+                  },
+                  "tipo_de_lista": {
+                    "$key": "listType",
+                    "type": "field",
+                    "interface": "dropdown",
+                    "interfaceOptions": {
+                      "choices": {"list": "List", "cards": "Cards"}
+                    },
+                    "title": "Tipo de lista"
+                  },
+                  "textos": {
+                    "type": "array",
+                    "$key": "texts",
+                    "title": "Textos de tarjeta",
+                    "children": [{
+                      "type": "field",
+                      "$key": "text",
+                      "title": "Linea de texto",
+                      "interface": "text-input",
+                      "interfaceOptions": {}
+                    }]
+                  }
+                }
+              }]
+            }
+          }
+        },
+        {
+          "type": "field",
+          "$key": "texts",
+          "title": "Texto simple",
+          "field": "input-field"
+        }
+      ]
+    }
+  },
+  "translation": {
+    "en-US": {
+      "repeater": "Repeater",
+      "schema": "The Schema",
+      "add": "Add",
+      "schema_comment": "Enter JSON schema for the fields you want, type can be array, object and field",
+      "placeholder": "Placeholder",
+      "placeholder_comment": "Enter placeholder text",
+      "item": "Item"
+    }
+  }
+}
