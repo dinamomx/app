@@ -8,7 +8,9 @@
       <div @click="collapsed = !collapsed">
         <v-icon :name="collapsedIcon" :class="collapsedIcon" size="18"></v-icon>
       </div>
-      <div><v-icon name="delete" class="delete" size="18"></v-icon></div>
+      <div>
+        <v-icon name="delete" class="delete" size="18"></v-icon>
+      </div>
     </div>
     <div v-show="collapsed" class="repeater-group__body">
       <div v-if="schema.type === 'object'">
@@ -21,17 +23,13 @@
           />
           <repeater-group
             v-else-if="typeof value[key] !== 'undefined'"
-            style="border-color: red;"
             v-model="value[key]"
             :schema="field"
             :key="key"
           />
-          <span :key="key + 'span'">^value.{{ key }}</span>
         </template>
-        <hr />
       </div>
       <div v-else-if="schema.type === 'array'">
-        {{ value }}
         <template v-for="(group, i) in arrayFields">
           <repeater-field
             v-model="value[i].value"

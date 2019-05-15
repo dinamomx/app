@@ -1,6 +1,5 @@
 <template>
   <div class="interface-repeater-container">
-    <!-- <pre v-text="currentItems"></pre> -->
     <div class="repeater-group-container" dropzone="true">
       <template v-for="(group, i) in currentItems">
         <repeater-field
@@ -16,9 +15,27 @@
           v-model="value[i].value"
         />
       </template>
+      <controls :schema="schema" @add-field="addNewField"></controls>
     </div>
-    <controls :schema="schema" @add-field="addNewField"></controls>
-    <pre v-text="value"></pre>
+    <div v-if="!isValid">
+      <v-notice color="warning">
+        Error parsing the input, please replicate your data into the field interface.
+        <br />
+        <span class="style-3">
+          DO NOT SAVE UNITL YOU HAVE FINISHED COMPLETING THE MIGRATION, OTHERWISE YOUR DATA WILL BE
+          LOST
+        </span>
+      </v-notice>
+      <v-ext-input
+        id="code"
+        :value="originalValue"
+        readonly
+        name="OriginalValue"
+        :options="{
+          language: 'JSON'
+        }"
+      />
+    </div>
   </div>
 </template>
 
@@ -44,7 +61,9 @@ export default {
   components: { Controls, RepeaterField, RepeaterGroup },
   data() {
     return {
-      currentItems: []
+      currentItems: [],
+      isValid: true,
+      originalValue: ""
     };
   },
   computed: {
@@ -55,16 +74,28 @@ export default {
     }
   },
   created() {
-    if (!Array.isArray(this.value)) {
+    // If null or ''
+    if (!this.value) {
       this.$emit("input", []);
-    } else {
+    } else if (Array.isArray(this.value) && this.value.length > 0) {
       this.value.forEach(item => {
         const schemaI = this.schema.find(({ $key }) => $key === item.$key);
-        this.currentItems.push(schemaI);
+        if (schemaI) {
+          this.currentItems.push(schemaI);
+        } else {
+          this.invalidData();
+        }
       });
+    } else {
+      this.invalidData();
     }
   },
   methods: {
+    invalidData() {
+      this.isValid = false;
+      this.originalValue = _.merge({}, [this.value]);
+      this.$emit("input", []);
+    },
     /**
      * @param {number}i The index of the item
      */

@@ -1,7 +1,6 @@
 <template>
   <div class="field">
     <label>{{ schema.title }}</label>
-    {{ value }}
     <v-ext-input
       @input="$emit('input', $event)"
       :value="value"
