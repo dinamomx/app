@@ -5,44 +5,56 @@
         <v-icon name="drag_handle" class="drag_handle" size="18"></v-icon>
       </div>
       <label>{{ schema.title }}</label>
-      <div @click="collapsed = !collapsed">
+      <button @click="collapsed = !collapsed">
         <v-icon :name="collapsedIcon" :class="collapsedIcon" size="18"></v-icon>
-      </div>
-      <div>
+      </button>
+      <button v-if="!confirmDelete" @click="confirmDelete = true" key="delete0">
         <v-icon name="delete" class="delete" size="18"></v-icon>
-      </div>
+      </button>
+      <button v-else class="confirm-delete" @click="$emit('delete')" key="delete1">
+        <v-icon name="delete" class="delete" size="18"></v-icon>
+        ¿Are you shure?
+      </button>
     </div>
     <div v-show="collapsed" class="repeater-group__body">
       <div v-if="schema.type === 'object'">
         <template v-for="(field, key) in schema.properties">
-          <RepeaterField
+          <repeater-field
             v-if="field.type === 'field'"
-            :key="key"
-            v-model="value[key]"
+            :key="(value[key] || {}).$id || key"
+            :value="value[key]"
+            @input="updateObjectValue({ value: $event, key })"
             :schema="field"
+            @delete="deleteField(key)"
           />
           <repeater-group
             v-else-if="typeof value[key] !== 'undefined'"
-            v-model="value[key]"
+            :key="`${(value[key] || {}).$id}-${key}`"
+            :value="value[key]"
             :schema="field"
-            :key="key"
+            @input="updateObjectValue({ value: $event, key })"
+            @delete="deleteField(key)"
           />
         </template>
       </div>
       <div v-else-if="schema.type === 'array'">
-        <template v-for="(group, i) in arrayFields">
+        <template v-for="(group, key) in currentItems">
           <repeater-field
-            v-model="value[i].value"
             v-if="group.type === 'field'"
-            :key="i"
+            :key="(value[key] || {}).$id || key"
+            :value="value[key] ? value[key].value : ''"
             :schema="group"
+            @input="updateObjectValue({ value: $event, key })"
+            @delete="deleteField(key)"
           />
 
           <repeater-group
-            v-model="value[i].value"
             v-else-if="group.type === 'object'"
-            :key="i"
+            :key="`${(value[key] || {}).$id}-${key}`"
+            :value="value[key] ? value[key].value : ''"
             :schema="group"
+            @input="updateObjectValue({ value: $event, key })"
+            @delete="deleteField(key)"
           />
         </template>
         <repeater-controls :schema="schema.children" @add-field="addNewField" />
@@ -52,11 +64,13 @@
 </template>
 
 <script>
+import methods from "./repeater-mixin";
 import RepeaterField from "./field.vue";
 import RepeaterControls from "./controls.vue";
 
 export default {
   name: "RepeaterGroup",
+  mixins: [methods],
   components: {
     RepeaterField,
     RepeaterControls
@@ -74,59 +88,61 @@ export default {
   data() {
     return {
       collapsed: false,
-      arrayFields: []
+      currentItems: [],
+      confirmDelete: false
     };
   },
   computed: {
     collapsedIcon() {
       return this.collapsed ? "unfold_less" : "unfold_more";
+    },
+    localValue: {
+      get() {
+        return this.value;
+      },
+      set(value) {
+        this.$emit("input", value);
+      }
     }
   },
   created() {
-    if (!this.value) {
+    if (!this.localValue) {
       if (this.schema.type === "object") {
-        const value = {};
+        const localValue = {};
         Object.keys(this.schema.properties).forEach(key => {
           const prop = this.schema.properties[key];
-          value[key] = prop.type === "array" ? [] : "";
+          localValue[key] = prop.type === "array" ? [] : "";
         });
         // this.value.value = value;
-        this.$emit("input", value);
+        this.$emit("input", localValue);
       } else if (this.schema.type === "array") {
         this.$emit("input", []);
       }
     } else {
       if (this.schema.type === "array") {
-        this.value.forEach(item => {
+        this.localValue.forEach(item => {
           const schemaI = this.schema.children.find(({ $key }) => $key === item.$key);
-          this.arrayFields.push(schemaI);
+          this.currentItems.push(schemaI);
         });
       }
     }
   },
-  methods: {
-    addNewField({ field }) {
-      this.arrayFields.push(field);
-      if (Array.isArray(this.value)) {
-        const payload = { field: field.title, value: "", $key: field.$key };
-        // this.value.push(payload);
-        console.log("Updating array", payload);
-        this.$emit("input", [...this.value, payload]);
-      } else {
-        this.$emit("input", [{ field: field.title, value: "", $key: field.$key }]);
-      }
-    },
-    /**
-     * Sets the value for the top level items
-     */
-    updateValue({ value, key, index, field }) {
-      this.value.splice(index, 1, { field, value, $key: key });
-    }
-  }
+  methods: {}
 };
 </script>
 
 <style scoped>
+button {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.confirm-delete {
+  background: var(--danger);
+  color: #fff;
+  margin: -0.5rem -0.5rem -0.5rem 0;
+  padding: 0.5rem;
+}
+
 .repeater-group {
   display: block;
   border: 1px solid var(--blue-grey);

@@ -3,20 +3,28 @@
     <div class="repeater-group-container" dropzone="true">
       <template v-for="(group, i) in currentItems">
         <repeater-field
-          v-model="value[i].value"
           v-if="group.type === 'field'"
-          :key="i"
+          :key="(value[i] || {}).$id || i"
+          :value="value[i] ? value[i].value : i"
           :schema="group"
+          @input="updateObjectValue({ value: $event, key: i })"
+          @delete="deleteField(i)"
         />
         <repeater-group
           v-else-if="group.type === 'object'"
-          :key="i"
+          :key="(value[i] || {}).$id || i"
           :schema="group"
-          v-model="value[i].value"
+          :value="value[i] ? value[i].value : i"
+          @input="updateObjectValue({ value: $event, key: i })"
+          @delete="deleteField(i)"
         />
       </template>
       <controls :schema="schema" @add-field="addNewField"></controls>
     </div>
+    value
+    <pre class="pre" v-text="value"></pre>
+    currentItems
+    <pre class="pre" v-text="currentItems"></pre>
     <div v-if="!isValid">
       <v-notice color="warning">
         Error parsing the input, please replicate your data into the field interface.
@@ -33,6 +41,7 @@
 
 <script>
 import mixin from "@directus/extension-toolkit/mixins/interface";
+import methods from "./repeater-mixin";
 import Controls from "./controls.vue";
 import RepeaterField from "./field.vue";
 import RepeaterGroup from "./group.vue";
@@ -49,7 +58,7 @@ import RepeaterGroup from "./group.vue";
 
 export default {
   name: "RepeaterInput",
-  mixins: [mixin],
+  mixins: [mixin, methods],
   components: { Controls, RepeaterField, RepeaterGroup },
   data() {
     return {
@@ -67,7 +76,7 @@ export default {
   },
   created() {
     // If null or ''
-    if (!this.value) {
+    if (this.value === null || this.value == "") {
       this.$emit("input", []);
     } else if (Array.isArray(this.value) && this.value.length > 0) {
       this.value.forEach(item => {
@@ -87,20 +96,6 @@ export default {
       this.isValid = false;
       this.originalValue = _.merge({}, [this.value]);
       this.$emit("input", []);
-    },
-    /**
-     * @param {number}i The index of the item
-     */
-    addNewField({ field }) {
-      this.currentItems.push(field);
-
-      this.value.push({ field: field.title, value: "", $key: field.$key });
-    },
-    /**
-     * Sets the value for the top level items
-     */
-    updateValue({ value, key, index, field }) {
-      this.value.splice(index, 1, { field, value, $key: key });
     }
   }
 };
@@ -118,9 +113,14 @@ export default {
 }
 .pre {
   max-width: 100%;
-  height: 300px;
+  max-height: 300px;
   overflow: auto;
   white-space: pre;
   font-family: "Courier New", Courier, monospace;
+  padding: 0.5rem;
+  border: 1px solid var(--light-gray);
+  margin-top: 1rem;
+  background-color: var(--lightest-gray);
+  border-radius: var(--border-radius);
 }
 </style>
