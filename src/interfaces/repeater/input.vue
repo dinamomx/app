@@ -21,10 +21,10 @@
       </template>
       <controls :schema="schema" @add-field="addNewField"></controls>
     </div>
-    value
+    <!-- value
     <pre class="pre" v-text="value"></pre>
     currentItems
-    <pre class="pre" v-text="currentItems"></pre>
+    <pre class="pre" v-text="currentItems"></pre> -->
     <div v-if="!isValid">
       <v-notice color="warning">
         Error parsing the input, please replicate your data into the field interface.
