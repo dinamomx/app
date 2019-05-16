@@ -26,15 +26,7 @@
           LOST
         </span>
       </v-notice>
-      <v-ext-input
-        id="code"
-        :value="originalValue"
-        readonly
-        name="OriginalValue"
-        :options="{
-          language: 'JSON'
-        }"
-      />
+      <div v-text="originalValue" class="pre"></div>
     </div>
   </div>
 </template>
@@ -114,7 +106,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .v-input {
   width: 100%;
   max-width: var(--width-medium);
@@ -123,5 +115,12 @@ export default {
 .group {
   border-bottom: 1px solid var(--gray);
   margin-bottom: 1rem;
+}
+.pre {
+  max-width: 100%;
+  height: 300px;
+  overflow: auto;
+  white-space: pre;
+  font-family: "Courier New", Courier, monospace;
 }
 </style>

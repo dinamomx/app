@@ -126,24 +126,24 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .repeater-group {
   display: block;
   border: 1px solid var(--blue-grey);
   margin-bottom: 1rem;
+}
 
-  &__header {
-    padding: 0.5rem;
-    justify-content: space-between;
-    display: flex;
-    border-bottom: 1px solid var(--blue-grey);
-    label {
-      padding: 0 1rem;
-      flex: 1 0 auto;
-    }
-  }
-  &__body {
-    padding: 1rem;
-  }
+.repeater-group__header {
+  padding: 0.5rem;
+  justify-content: space-between;
+  display: flex;
+  border-bottom: 1px solid var(--blue-grey);
+}
+.repeater-group label {
+  padding: 0 1rem;
+  flex: 1 0 auto;
+}
+.repeater-group__body {
+  padding: 1rem;
 }
 </style>

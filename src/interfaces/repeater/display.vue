@@ -33,32 +33,24 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .replicator-display {
   list-style: none;
   margin: 0;
   padding: 0;
   font-weight: normal;
-  b {
-    font-weight: bold;
-  }
-  li {
-    display: inline-block;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    background: var(--accent);
-    padding: 0.25rem;
-    margin-right: 0.25rem;
-    color: var(--white);
-    border-radius: 3px;
-
-    // &:not(:last-child) {
-    //   &::after {
-    //     content: "|";
-    //     display: inline-block;
-    //     margin: 0 0.5rem;
-    //   }
-    // }
-  }
+}
+.replicator-display b {
+  font-weight: bold;
+}
+.replicator-display li {
+  display: inline-block;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  background: var(--accent);
+  padding: 0.25rem;
+  margin-right: 0.25rem;
+  color: var(--white);
+  border-radius: 3px;
 }
 </style>
