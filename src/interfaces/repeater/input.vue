@@ -70,7 +70,7 @@ export default {
   computed: {
     /** @returns {ReplicatorConfig[]} */
     schema() {
-      const s = Array.isArray(this.options.schema) ? this.options.schema : [this.options.schema];
+      return Array.isArray(this.options.schema) ? this.options.schema : [this.options.schema];
       return s;
     }
   },
