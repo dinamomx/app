@@ -71,7 +71,6 @@ export default {
     /** @returns {ReplicatorConfig[]} */
     schema() {
       return Array.isArray(this.options.schema) ? this.options.schema : [this.options.schema];
-      return s;
     }
   },
   created() {
